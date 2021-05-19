@@ -19,26 +19,26 @@ const register = async(user = {}) => {
 
   // Validate
   if (!user.email) {
-    throw new Error(`"email" is required`)
+    throw new Error(`メールアドレスを入力してください`)
   }
   if (!user.password) {
-    throw new Error(`"password" is required`)
+    throw new Error(`パスワードを入力してください`)
   }
   if (!utils.validateEmailAddress(user.email)) {
-    throw new Error(`"${user.email}" is not a valid email address`)
+    throw new Error(`"${user.email}" は有効なメールアドレスではありません`)
   }
 
   // Check if user is already registered
   const existingUser = await getByEmail(user.email)
   if (existingUser) {
-    throw new Error(`A user with email "${user.email}" is already registered`)
+    throw new Error(`"${user.email}" はすでに登録済みです`)
   }
 
   user.password = utils.hashPassword(user.password)
 
   // Save
   const params = {
-    TableName: process.env.db,
+    TableName: process.env.DB,
     Item: {
       hk: user.email,
       sk: 'user',
@@ -69,7 +69,7 @@ const getByEmail = async(email) => {
 
   // Query
   const params = {
-    TableName: process.env.db,
+    TableName: process.env.DB,
     KeyConditionExpression: 'hk = :hk',
     ExpressionAttributeValues: { ':hk': email }
   }
@@ -98,8 +98,8 @@ const getById = async(id) => {
 
   // Query
   const params = {
-    TableName: process.env.db,
-    IndexName: process.env.dbIndex1,
+    TableName: process.env.DB,
+    IndexName: process.env.DB_INDEX1,
     KeyConditionExpression: 'sk2 = :sk2 and sk = :sk',
     ExpressionAttributeValues: { ':sk2': id, ':sk': 'user' }
   }

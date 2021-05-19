@@ -11,7 +11,7 @@ module.exports = (passport) => {
 
   const options = {}
   options.jwtFromRequest = ExtractJWT.fromAuthHeaderAsBearerToken()
-  options.secretOrKey = process.env.tokenSecret || 'secret_j91jasf0j1asfkl' // Change this to only use your own secret token
+  options.secretOrKey = process.env.TOKEN_SECRET || 'secret_j91jasf0j1asfkl' // Change this to only use your own secret token
 
   passport.use(new StrategyJWT(options, async (jwtPayload, done) => {
     let user

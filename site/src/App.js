@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Switch,
@@ -8,41 +8,33 @@ import Home from './pages/Home/Home'
 import Auth from './pages/Auth/Auth'
 import Dashboard from './pages/Dashboard/Dashboard'
 import { getSession } from './utils'
+import { AppProvider } from '@shopify/polaris'
+import translations from "@shopify/polaris/locales/ja.json";
 
-export default class App extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {}
-  }
-
-  async componentDidMount() {
-    // console.log(getSession())
-  }
-
-  render() {
-    return (
+export default function App() {
+  useEffect(()=>{
+    console.log("session:", getSession())
+  }, []);
+  return (
+    <AppProvider i18n={translations}>
       <Router>
         <Switch>
-
           <Route path='/register'>
             <Auth />
           </Route>
-
           <Route path='/login'>
             <Auth />
           </Route>
-
           <PrivateRoute
             exact
             path='/'
             component={Dashboard}
           />
-
         </Switch>
       </Router>
-    )
-  }
+    </AppProvider>
+  )
 }
 
 /**
@@ -53,6 +45,6 @@ const PrivateRoute = ({ component, ...options }) => {
 
   const session = getSession()
 
-  const finalComponent = session ? Dashboard : Home
+  const finalComponent = session ? Dashboard : Auth
   return <Route {...options} component={finalComponent} />
 }

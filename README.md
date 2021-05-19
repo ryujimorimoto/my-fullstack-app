@@ -6,6 +6,7 @@ AWS Lambda、AWS HTTP API、Express.js、React、DynamoDB 上に構築された�
 
 ## Quick Start
 
+ここに環境構築方法を書いていく。
 Install the latest version of the Serverless Framework:
 
 ```
@@ -34,7 +35,7 @@ domain=serverless-fullstack-app.com
 
 In the root folder of the project, run `serverless deploy`
 
-Lastly, you will need to add your API domain manually to your React application in `./site/src/config.js`, so that you interact with your serverless Express.js back-end. You can find the your API url by going into `./api` and running `serverless info` and copying the `url:` value. It should look something like this `https://9jfalnal19.execute-api.us-east-1.amazonaws.com` or it will look like the custom domain you have set.
+Lastly, you will need to add your API domain manually to your React application in `./site/src/config.js`, so that you interact with your serverless Express.js back-end. You can find the your API url by going into `./api` and running `serverless info` and copying the `url:` value. It should look something like this `https://9jfalnal19.execute-api.ap-northeast-1.amazonaws.com` or it will look like the custom domain you have set.
 
 **Note:** Upon the first deployment of your website, it will take a 2-3 minutes for the Cloudfront (CDN) URL to work. Until then, you can access it via the `bucketUrl`.
 

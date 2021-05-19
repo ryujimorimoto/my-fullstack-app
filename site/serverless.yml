@@ -9,3 +9,5 @@ inputs:
     dist: build
   # Enable this when you want to set a custom domain.
   # domain: ${env:domain}
+  env:
+    REACT_APP_PUBLIC_API_URL: ${env:REACT_APP_PUBLIC_API_URL}

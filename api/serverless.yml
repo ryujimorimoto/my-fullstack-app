@@ -1,18 +1,70 @@
 component: express
 name: api
+custom: 
+  stage: dev
 
 inputs:
-  # Express application source code.
   src: ./
-  # Permissions required for the AWS Lambda function to interact with other resources
   roleName: ${output:permissions.name}
-  # Enable this when you want to set a custom domain.
   # domain: api.${env:domain}
-  # Environment variables
+  region: ap-northeast-1
   env:
-    # AWS DynamoDB Table name. Needed for the code to access it.
-    db: ${output:database.name}
-    # AWS DynamoDB Table Index name. Needed for the code to access it.
-    dbIndex1: ${output:database.indexes.gsi1.name}
+    DB: ${output:database.name}
+    DB_INDEX1: ${output:database.indexes.gsi1.name}
     # A secret token to sign the JWT tokens with.
-    tokenSecret: secret_1234 # Change to secret via environment variable: ${env:tokenSecret}
+    TOKEN_SECRET: ${env:tokenSecret}
+
+resources:
+  Resources:
+    CognitoUserIdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: dev_CognitoUserIdentityPool
+        CognitoIdentityProviders:
+          - ClientId:
+              Ref: CognitoUserPoolClient
+            ProviderName:
+              Fn::GetAtt: [ "CognitoUserPool", "ProviderName" ]
+
+    CognitoUserIdentityPoolRoleAttachment:
+      Type: AWS::Cognito::IdentityPoolRoleAttachment
+      Properties:
+        IdentityPoolId:
+          Ref: CognitoUserIdentityPool
+
+    CognitoUserPool: 
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: dev_api_cognito_user_pool
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        EmailVerificationSubject: "管理者アカウント認証コード"
+        EmailVerificationMessage: "Email Verify: {####}\
+        認証コードを入力してください。
+        "
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireNumbers: true
+            RequireSymbols: true
+        Schema:
+          - Name: name
+            AttributeDataType: String
+            Required: true
+            Mutable: true
+          - Name: email
+            AttributeDataType: String
+            Required: true
+            Mutable: true
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        # Generate an app client name based on the stage
+        ClientName: dev_api_cognito_user_pool_client
+        UserPoolId:
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+        GenerateSecret: false
