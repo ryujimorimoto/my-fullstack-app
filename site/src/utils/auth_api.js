@@ -1,17 +1,55 @@
 import config from '../config'
+import axiosBase from "axios";
 
+// TODO: 全てfetchからaxiosに変更すること！
+const axios = axiosBase.create({
+  baseURL: process.env.REACT_APP_PUBLIC_API_URL,
+  headers: {
+      'Content-Type': 'application/json',
+    },
+  responseType: 'json'
+});
 /**
- * Register a new user
+ * 新規ユーザー登録
  */
 export const userRegister = async (email, password, name) => {
   return await requestApi('/users/register', 'POST', { email, password, name })
 }
 
 /**
- * Login a new user
+ * 新規ユーザーの認証ページ
+ */
+export const userVerification = async (email, code) => {
+  return new Promise((resolve, reject) => {
+    axios.post("/users/verification",{
+      email: email,
+      code: code,
+    }).then((user)=>{
+      resolve(user);
+    }).catch(err => {
+      reject(err.response.data.code);
+    });
+  })
+  
+}
+
+/**
+ * ログイン
  */
 export const userLogin = async (email, password) => {
-  return await requestApi('/users/login', 'POST', { email, password })
+  return new Promise((resolve, reject) => {
+    axios.post("/users/login",{
+      email: email,
+      password: password,
+    }).then((user)=>{
+      console.log(user)
+      resolve(user);
+    }).catch(err => {
+      console.log(err)
+      reject(err.data);
+    });
+  });
+  // return await requestApi('/users/login', 'POST', { email, password })
 }
 
 

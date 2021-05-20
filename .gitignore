@@ -25,3 +25,5 @@ tmp
 package-lock.json
 yarn.lock
 test
+site/amplify
+site/src/aws-exports.js

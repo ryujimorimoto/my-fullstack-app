@@ -1,26 +1,31 @@
 const cognito_identify = require('amazon-cognito-identity-js');
 
 const userPool = new cognito_identify.CognitoUserPool({
-  UserPoolId: "awsmobile.aws_user_pools_id ",
-  ClientId: "awsmobile.aws_user_pools_web_client_id"
+  UserPoolId: process.env.AWS_USER_POOLS_ID,
+  ClientId: process.env.AWS_USER_POOLS_WEB_CLIENT_ID
 });
-export const uesrInfo =  () => {
+
+const uesrInfo =  () => {
   return new Promise((resolve, reject) => {
     userPool.signUp
   });
 }
 
-export const userSignUp = (email, password, username) => {
+const userSignUp = (email, password, username) => {
+  console.log("userSignUp params:", email, password, username)
   const dataEmail = { Name: 'email', Value: email }
   const attributeList = []
   attributeList.push(new cognito_identify.CognitoUserAttribute(dataEmail))
   const dataName = { Name: 'name', Value: username }
   attributeList.push(new cognito_identify.CognitoUserAttribute(dataName))
+  console.log("attributeList:", attributeList)
   return new Promise((resolve, reject) => {
     userPool.signUp(email, password, attributeList, null, (err, result) => {
       if (err) {
+        console.log("Error:", err)
         reject(err)
       } else {
+        console.log("Success:", result)
         resolve(result)
       }
     })
@@ -30,8 +35,8 @@ export const userSignUp = (email, password, username) => {
 /*
   確認コードからユーザーを有効化する
   */
-export const userConfirmation = (username, confirmationCode) => {
-  const userData = { Username: username, Pool: userPool }
+const userConfirmation = (email, confirmationCode) => {
+  const userData = { Username: email, Pool: userPool }
   const cognitoUser = new cognito_identify.CognitoUser(userData)
   return new Promise((resolve, reject) => {
     cognitoUser.confirmRegistration(confirmationCode, true, (err, result) => {
@@ -45,12 +50,12 @@ export const userConfirmation = (username, confirmationCode) => {
 }
 
 /*
-  username, passwordでログイン
+  email, passwordでログイン
   */
-export const userLogin = (username, password) => {
-  const userData = { Username: username, Pool: userPool }
+const userLogin = (email, password) => {
+  const userData = { Username: email, Pool: userPool }
   const cognitoUser = new cognito_identify.CognitoUser(userData)
-  const authenticationData = { Username: username, Password: password }
+  const authenticationData = { Username: email, Password: password }
   const authenticationDetails = new cognito_identify.AuthenticationDetails(authenticationData)
 
   return new Promise((resolve, reject) => {
@@ -65,7 +70,7 @@ export const userLogin = (username, password) => {
   })
 }
 
-export const userChangePassword = (oldPassword, newPassword) => {
+const userChangePassword = (oldPassword, newPassword) => {
   var cognitoUser = userPool.getCurrentUser()
   return new Promise((resolve, reject) => {
     cognitoUser.getSession(function (err, result) {
@@ -84,8 +89,8 @@ export const userChangePassword = (oldPassword, newPassword) => {
   })
 }
 
-export const forgotPassword = (username) =>{
-  const userData = { Username: username, Pool: userPool }
+const forgotPassword = (email) =>{
+  const userData = { Username: email, Pool: userPool }
   const cognitoUser = new cognito_identify.CognitoUser(userData)
   return new Promise((resolve, reject) => {
     cognitoUser.forgotPassword({
@@ -99,8 +104,8 @@ export const forgotPassword = (username) =>{
   })
 }
 
-export const confirmForgotPassword = (username, confirmationCode, newPassword) => {
-  const userData = { Username: username, Pool: userPool }
+const confirmForgotPassword = (email, confirmationCode, newPassword) => {
+  const userData = { Username: email, Pool: userPool }
   const cognitoUser = new cognito_identify.CognitoUser(userData)
   return new Promise((resolve, reject) => {
     cognitoUser.confirmPassword(confirmationCode, newPassword, {
@@ -114,7 +119,7 @@ export const confirmForgotPassword = (username, confirmationCode, newPassword) =
   })
 }
 
-export const userDelete = () => {
+const userDelete = () => {
   var cognitoUser = userPool.getCurrentUser()
   return new Promise((resolve, reject) => {
     cognitoUser.getSession(function (err, result) {
@@ -136,7 +141,7 @@ export const userDelete = () => {
 /*
   ログアウト
   */
-export const userLogout = () =>{
+const userLogout = () =>{
   console.log("logout")
   userPool.getCurrentUser().signOut();
   window.location.href = "/top";
@@ -145,7 +150,7 @@ export const userLogout = () =>{
 /*
   ログインしているかの判定
   */
-export const userIsAuthenticated = () => {
+const userIsAuthenticated = () => {
   const cognitoUser = userPool.getCurrentUser()
   return new Promise((resolve, reject) => {
     if (cognitoUser === null) { reject(cognitoUser) }
@@ -161,4 +166,16 @@ export const userIsAuthenticated = () => {
       }
     })
   })
+}
+module.exports = {
+  uesrInfo,
+  userSignUp,
+  userConfirmation,
+  userLogin,
+  userChangePassword,
+  forgotPassword,
+  confirmForgotPassword,
+  userDelete,
+  userLogout,
+  userIsAuthenticated,
 }

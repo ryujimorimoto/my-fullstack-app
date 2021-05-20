@@ -49,6 +49,7 @@ app.options(`*`, (req, res) => {
 })
 
 app.post(`/users/register`, asyncHandler(users.register))
+app.post(`/users/verification`, asyncHandler(users.verification))
 
 app.post(`/users/login`, asyncHandler(users.login))
 

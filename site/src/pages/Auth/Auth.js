@@ -274,9 +274,11 @@ export default function SignIn(props) {
     e.preventDefault()
     
 　　//fromで送られてきた値を処理する
-    try {
-      setSingUpLoading(true)
 
+    try{
+      setSingUpLoading(true)
+      console.log(shopFieldValue)
+      // shopFieldValueのストアにアプリがインストール済みかチェック
       const app = createApp({
         apiKey: process.env.REACT_APP_SHOPIFY_API_KEY,
         shopOrigin: shopFieldValue
@@ -286,8 +288,13 @@ export default function SignIn(props) {
       // history.push("/top?shop=" + shopFieldValue)
       // const redirect_url = process.env.REACT_APP_APPLICATION_URL + "/top?shop=" + shopFieldValue;
       // Redirect.create(app).dispatch(Redirect.Action.ADMIN_PATH, redirect_url);
-    } catch {
-      setErrorToast("メールアドレスまたはパスワードが違います")
+    } catch(err) {
+      console.log(err)
+      if(err.name == "AppBridgeError"){
+        setErrorToast("ショップドメインまたはAPIキーが違います")
+      }else{
+        setErrorToast("メールアドレスまたはパスワードが違います")
+      }
     }
 
     setSingUpLoading(false)
@@ -296,7 +303,6 @@ export default function SignIn(props) {
   async function handleSignUpSubmit(e) {
     e.preventDefault()
     const validation_reg = /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{8,100}$/i
-console.log(passwordFieldValue.match(validation_reg))
     //パスワードの一致値チェック
     if (passwordFieldValue !== passwordConfirmFieldValue) {
       return setErrorToast("パスワードが一致しません")
@@ -316,7 +322,10 @@ console.log(passwordFieldValue.match(validation_reg))
     } catch(e) {
       let errorMessage = "";
       console.log(e)
-      switch(e.code){
+      switch(e.code || e){
+        case String(e).match(/Error: An account with the given email already exists./) && e:
+          errorMessage = "登録済みのメールアドレスです";
+          break;
         case "UsernameExistsException":
           errorMessage = "登録済みのメールアドレスです";
           break;

@@ -11,5 +11,9 @@ inputs:
   env:
     DB: ${output:database.name}
     DB_INDEX1: ${output:database.indexes.gsi1.name}
-    # A secret token to sign the JWT tokens with.
     TOKEN_SECRET: ${env:tokenSecret}
+    AWS_PROJECT_REAGION: ${env:AWS_PROJECT_REAGION}
+    AWS_COGNITO_IDENTITY_POOL_ID: ${env:AWS_COGNITO_IDENTITY_POOL_ID}
+    AWS_COGNITO_REGION: ${env:AWS_COGNITO_REGION}
+    AWS_USER_POOLS_ID: ${env:AWS_USER_POOLS_ID}
+    AWS_USER_POOLS_WEB_CLIENT_ID: ${env:AWS_USER_POOLS_WEB_CLIENT_ID}
