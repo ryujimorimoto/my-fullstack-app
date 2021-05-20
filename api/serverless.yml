@@ -1,6 +1,6 @@
 component: express
 name: api
-custom: 
+custom:
   stage: dev
 
 inputs:
@@ -13,58 +13,3 @@ inputs:
     DB_INDEX1: ${output:database.indexes.gsi1.name}
     # A secret token to sign the JWT tokens with.
     TOKEN_SECRET: ${env:tokenSecret}
-
-resources:
-  Resources:
-    CognitoUserIdentityPool:
-      Type: AWS::Cognito::IdentityPool
-      Properties:
-        IdentityPoolName: dev_CognitoUserIdentityPool
-        CognitoIdentityProviders:
-          - ClientId:
-              Ref: CognitoUserPoolClient
-            ProviderName:
-              Fn::GetAtt: [ "CognitoUserPool", "ProviderName" ]
-
-    CognitoUserIdentityPoolRoleAttachment:
-      Type: AWS::Cognito::IdentityPoolRoleAttachment
-      Properties:
-        IdentityPoolId:
-          Ref: CognitoUserIdentityPool
-
-    CognitoUserPool: 
-      Type: AWS::Cognito::UserPool
-      Properties:
-        UserPoolName: dev_api_cognito_user_pool
-        UsernameAttributes:
-          - email
-        AutoVerifiedAttributes:
-          - email
-        EmailVerificationSubject: "管理者アカウント認証コード"
-        EmailVerificationMessage: "Email Verify: {####}\
-        認証コードを入力してください。
-        "
-        Policies:
-          PasswordPolicy:
-            MinimumLength: 8
-            RequireNumbers: true
-            RequireSymbols: true
-        Schema:
-          - Name: name
-            AttributeDataType: String
-            Required: true
-            Mutable: true
-          - Name: email
-            AttributeDataType: String
-            Required: true
-            Mutable: true
-    CognitoUserPoolClient:
-      Type: AWS::Cognito::UserPoolClient
-      Properties:
-        # Generate an app client name based on the stage
-        ClientName: dev_api_cognito_user_pool_client
-        UserPoolId:
-          Ref: CognitoUserPool
-        ExplicitAuthFlows:
-          - ADMIN_NO_SRP_AUTH
-        GenerateSecret: false
