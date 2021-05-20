@@ -23,6 +23,4 @@ inputs:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource:
-        - ${output:database.arn}
-        - ${output:database.arn}/index/*
+      Resource: "*"

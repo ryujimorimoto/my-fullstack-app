@@ -2,14 +2,11 @@
  * Controllers: Users
  */
 
-// const jwt = require('jsonwebtoken')
-// const { users } = require('../models')
 const { cognito } = require('../models')
-// const { comparePassword } = require('../utils')
-console.log("======= Users Controller ======");
 
 const register = async (req, res, next) => {
-  console.log(" POST /users/register", req);
+console.log("======= Users Controller ======");
+console.log(" POST /users/register", req);
   const body = req.body
   try {
     await cognito.userSignUp(body.email, body.password, body.name)
@@ -20,7 +17,8 @@ const register = async (req, res, next) => {
 
 }
 const verification = async (req, res, next) => {
-  console.log(" POST /users/verification", req);
+console.log("======= Users Controller ======");
+console.log(" POST /users/verification", req);
   const body = req.body;
   try {
     cognito.userConfirmation(body.email, body.code).then( (user) => {
@@ -36,7 +34,8 @@ const verification = async (req, res, next) => {
 }
 
 const login = async (req, res, next) => {
-  console.log(" POST /users/login", req);
+console.log("======= Users Controller ======");
+console.log(" POST /users/login", req);
   let user
   try {
     user = await cognito.userIsAuthenticated();

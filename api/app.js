@@ -2,7 +2,8 @@ const express = require('express')
 const app = express()
 const passport = require('passport')
 const {
-  users
+  users,
+  auth,
 } = require('./controllers')
 
 /**
@@ -50,8 +51,26 @@ app.options(`*`, (req, res) => {
 
 app.post(`/users/register`, asyncHandler(users.register))
 app.post(`/users/verification`, asyncHandler(users.verification))
-
 app.post(`/users/login`, asyncHandler(users.login))
+
+
+
+/******************************
+ * Shopifyアプリとしてインストール *
+ ******************************/
+ app.get(`/oauth`, asyncHandler(auth.oauth));
+
+/******************************
+ * アプリインストール済みチェック *
+ ******************************/
+app.get(`/shop/exist`, asyncHandler(auth.shop_exist));
+
+app.listen(3000, function() {
+    console.log("App started")
+});
+
+
+
 
 app.get(`/test/`, (req, res) => {
   res.status(200).send('Request received')

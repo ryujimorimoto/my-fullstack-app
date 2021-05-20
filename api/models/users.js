@@ -89,29 +89,29 @@ const getByEmail = async(email) => {
  * @param {string} id
  */
 
-const getById = async(id) => {
+// const getById = async(id) => {
 
-  // Validate
-  if (!id) {
-    throw new Error(`"id" is required`)
-  }
+//   // Validate
+//   if (!id) {
+//     throw new Error(`"id" is required`)
+//   }
 
-  // Query
-  const params = {
-    TableName: process.env.DB,
-    IndexName: process.env.DB_INDEX1,
-    KeyConditionExpression: 'sk2 = :sk2 and sk = :sk',
-    ExpressionAttributeValues: { ':sk2': id, ':sk': 'user' }
-  }
-  let user = await dynamodb.query(params).promise()
+//   // Query
+//   const params = {
+//     TableName: process.env.DB,
+//     IndexName: process.env.DB_INDEX1,
+//     KeyConditionExpression: 'sk2 = :sk2 and sk = :sk',
+//     ExpressionAttributeValues: { ':sk2': id, ':sk': 'user' }
+//   }
+//   let user = await dynamodb.query(params).promise()
 
-  user = user.Items && user.Items[0] ? user.Items[0] : null
-  if (user) {
-    user.id = user.sk2
-    user.email = user.hk
-  }
-  return user
-}
+//   user = user.Items && user.Items[0] ? user.Items[0] : null
+//   if (user) {
+//     user.id = user.sk2
+//     user.email = user.hk
+//   }
+//   return user
+// }
 
 /**
  * Convert user record to public format
