@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const passport = require('passport')
 const {
-  users,
+  auth,
 } = require('./controllers')
 
 /**
@@ -74,7 +74,7 @@ app.get(`/test/`, (req, res) => {
  * Routes - Protected
  */
 
-app.post(`/user`, passport.authenticate('jwt', { session: false }), asyncHandler(users.get))
+// app.post(`/user`, passport.authenticate('jwt', { session: false }), asyncHandler(users.get))
 
 /**
  * Routes - Catch-All

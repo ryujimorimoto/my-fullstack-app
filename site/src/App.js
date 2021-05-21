@@ -16,15 +16,16 @@ import AppInstall from './pages/Auth/AppInstall'
 import Callback from './pages/Auth/Callback'
 import ShopDomain from './pages/Auth/ShopDomain'
 
-import cognitoBase from './utils/cognito.js'
-const cognito = new cognitoBase()
+import {
+  userPool,
+} from './utils'
+
 export default function App() {
   useEffect(()=>{
-    if( !window.location.pathname.match(/login/) && 
-        !window.location.pathname.match(/register/) && 
-        !cognito.userPool.getCurrentUser()?.getSession(function(error,session){return session.accessToken.jwtToken})
+    if( !window.location.pathname.match(/auth/) &&
+        !userPool.getCurrentUser()?.getSession(function(error,session){return session.accessToken.jwtToken})
     ){
-      window.location = "/login?flash=ログインしてください";
+      window.location = "/auth/login?flash=ログインしてください";
     }
   }, []);
   return (
@@ -33,12 +34,12 @@ export default function App() {
         <Switch>
 
           <Route path='/top' component={Home} />
-          <Route path='/register' component={Auth} />
-          <Route exact path='/verification/:email' component={Verification} />
-          <Route path='/login' component={Auth} />
-          <Route path='/auth' component={AppInstall} />
-          <Route path='/callback' component={Callback} />
-          <Route path='/shop_domain' component={ShopDomain} />
+          <Route path='/auth/register' component={Auth} />
+          <Route exact path='/auth/verification/:email' component={Verification} />
+          <Route path='/auth/login' component={Auth} />
+          <Route path='/auth/callback' component={Callback} />
+          <Route path='/auth/shop_domain' component={ShopDomain} />
+          <Route exact path='/auth' component={AppInstall} />
 
           <PrivateRoute
             exact

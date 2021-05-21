@@ -6,14 +6,14 @@ import { v4 as uuidv4 } from 'uuid';
 import axiosBase from 'axios';
 import { SkeletonBodyText, SkeletonPage, Layout, TextContainer, SkeletonDisplayText } from '@shopify/polaris'
 
-export default function Auth(props) {
+export default function AppInstall(props) {
   useEffect(async () => {
     const query = parse(props.location.search);
     const shopOrigin = query.shop;
     // インストール対象のストアチェック
     if(typeof shopOrigin == 'undefined'){
       // ストアURLがなければ、入力画面へ遷移
-      return window.location.assign(process.env.REACT_APP_APPLICATION_URL + '/shop_domain');
+      return window.location.assign(process.env.REACT_APP_APPLICATION_URL + '/auth/shop_domain');
     }
     // インストール済みかをチェック
     const shopExisted = await shopExist(shopOrigin)
@@ -78,7 +78,7 @@ async function appRedirect(shopExist, shopOrigin, query){
     } else {
       const app = createApp({
         apiKey: apiKey,
-        shopOrigin: shopOrigin
+        host: Buffer.from(shopOrigin).toString('base64'),
       });
       console.log("Shopifyアプリ画面", apiKey, shopOrigin)
       Redirect.create(app).dispatch(Redirect.Action.APP, '/top?shop=' + shopOrigin);
@@ -86,15 +86,17 @@ async function appRedirect(shopExist, shopOrigin, query){
   }else{
     const nonce = uuidv4()
     const access_mode = 'offline'
-    const redirectUri = process.env.REACT_APP_APPLICATION_URL + '/callback';
+    const redirectUri = process.env.REACT_APP_APPLICATION_URL + '/auth/callback';
     const permissionUrl = `https://${shopOrigin}/admin/oauth/authorize?client_id=${apiKey}&scope=${scope}&redirect_uri=${redirectUri}&state=${nonce}&grant_options[]=${access_mode}`;
+    
     if (window.top === window.self) {
       window.location.assign(permissionUrl);
     } else {
       const app = createApp({
         apiKey: apiKey,
-        shopOrigin: shopOrigin
+        host: Buffer.from(shopOrigin).toString('base64'),
       });
+      console.log(app);
       Redirect.create(app).dispatch(Redirect.Action.REMOTE, permissionUrl);
     }
   }

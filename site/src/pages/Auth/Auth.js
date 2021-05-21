@@ -7,8 +7,10 @@ import { useHistory } from 'react-router-dom'
 import { parse } from 'query-string';
 
 import createApp from '@shopify/app-bridge';
-import cognitoBase from '../../utils/cognito.js'
-const cognito = new cognitoBase();
+import {
+  login,
+  signUp,
+} from '../../utils'
 
 export default function SignIn(props) {
   // タブ定義
@@ -275,15 +277,13 @@ export default function SignIn(props) {
 
     try{
       setSingUpLoading(true)
-      const host = Buffer.from(shopFieldValue).toString('base64');
       // shopFieldValueのストアにアプリがインストール済みかチェック
       const app = createApp({
         apiKey: process.env.REACT_APP_SHOPIFY_API_KEY,
-        shopOrigin: shopFieldValue,
-        host: host,
+        host: Buffer.from(shopFieldValue).toString('base64'),
       });
       let user
-      user = await cognito.login( emailFieldValue, passwordFieldValue)
+      user = await login( emailFieldValue, passwordFieldValue)
       console.log("user:", user)
       window.location.href = "/top?shop=" + shopFieldValue;
       // Redirect.create(app).dispatch(Redirect.Action.ADMIN_PATH, redirect_url);
@@ -314,9 +314,9 @@ export default function SignIn(props) {
 
     try {
       setSingUpLoading(true)
-      await cognito.signUp( emailFieldValue, passwordFieldValue, nameFieldValue)
+      await signUp( emailFieldValue, passwordFieldValue, nameFieldValue)
       // アカウント登録が成功したら、認証ページへリダイレクトさせている
-      history.push( "/verification/" + emailFieldValue)
+      history.push( "/auth/verification/" + emailFieldValue)
       // document.location.href = "/verification/" + emailFieldValue;
     } catch(e) {
       let errorMessage = "";
