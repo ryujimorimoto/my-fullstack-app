@@ -6,7 +6,24 @@ AWS Lambda、AWS HTTP API、Express.js、React、DynamoDB 上に構築された�
 
 ## Quick Start
 
-ここに環境構築方法を書いていく。
+ルートディレクトリでデプロイ
+`sls deploy`
+
+ユーザー認証は、フロント側の cognito を使って対応する。
+cognito は、amplify を使って導入する。
+./site ディレクトリで amplify を実行する。
+
+```
+cd site
+amplify configure
+amplify init
+```
+
+参考サイト：[サーバレスで Shopify アプリの構築方法を解説！AWS Amplify, Serverless Framework](https://forestbook-freelance.com/2020/12/27/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%AC%E3%82%B9%E3%81%A7shopify%E3%82%A2%E3%83%97%E3%83%AA%E3%81%AE%E6%A7%8B%E7%AF%89%E3%82%92%E8%A7%A3%E8%AA%AC%EF%BC%81/)
+
+※注意事項
+なぜか、api ディレクトリで sls deploy をやらないと、api/serverless.yml で設定した環境変数が適応されない。
+
 Install the latest version of the Serverless Framework:
 
 ```
