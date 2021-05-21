@@ -131,6 +131,5 @@ const convertToPublicFormat = (user = {}) => {
 module.exports = {
   register,
   getByEmail,
-  getById,
   convertToPublicFormat,
 }

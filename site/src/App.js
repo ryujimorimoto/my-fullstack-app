@@ -3,6 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Redirect,
 } from 'react-router-dom'
 import Home from './pages/Home/Home'
 import Auth from './pages/Auth/Auth'
@@ -15,14 +16,23 @@ import AppInstall from './pages/Auth/AppInstall'
 import Callback from './pages/Auth/Callback'
 import ShopDomain from './pages/Auth/ShopDomain'
 
+import cognitoBase from './utils/cognito.js'
+const cognito = new cognitoBase()
 export default function App() {
   useEffect(()=>{
-    console.log("session:", getSession())
+    if( !window.location.pathname.match(/login/) && 
+        !window.location.pathname.match(/register/) && 
+        !cognito.userPool.getCurrentUser()?.getSession(function(error,session){return session.accessToken.jwtToken})
+    ){
+      window.location = "/login?flash=ログインしてください";
+    }
   }, []);
   return (
     <AppProvider i18n={translations}>
       <Router>
         <Switch>
+
+          <Route path='/top' component={Home} />
           <Route path='/register' component={Auth} />
           <Route exact path='/verification/:email' component={Verification} />
           <Route path='/login' component={Auth} />

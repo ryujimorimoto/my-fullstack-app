@@ -9,9 +9,9 @@ import {AppProvider, ContextualSaveBar,InlineError,
 import {
   useHistory,
 } from 'react-router-dom'
-import {
-  userVerification,
-} from '../../utils/auth_api';
+
+import cognitoBase from '../../utils/cognito.js'
+const cognito = new cognitoBase();
 
 export default function Verification(props) {
   const params = props.match.params
@@ -102,7 +102,7 @@ export default function Verification(props) {
       e.preventDefault()
       setVerifyLoading(true)
       // ユーザーの認証
-      userVerification(params.email, codeFieldValue).then( user => {
+      cognito.confirmation(params.email, codeFieldValue).then( user => {
         history.push("/login?show=sign_in&flash=アカウント登録が完了しました")
       }).catch( error => {
         console.log("Error:", error)

@@ -2,7 +2,7 @@ component: aws-dynamodb
 name: token-database
 
 inputs:
-  name: ${app}shopTokens
+  name: ${app}-shopTokens
   region: ap-northeast-1
   attributeDefinitions:
     - AttributeName: shop_id

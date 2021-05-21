@@ -34,21 +34,11 @@ console.log(" POST /users/verification", req);
 }
 
 const login = async (req, res, next) => {
-console.log("======= Users Controller ======");
-console.log(" POST /users/login", req);
+  console.log("======= Users Controller ======");
+  console.log(" POST /users/login", req);
+  const body = req.body;
   let user
   try {
-    user = await cognito.userIsAuthenticated();
-  } catch (error) {
-    return done(error, null)
-  } 
-  if (!user) {
-    return res.status(404).send({ error: 'ユーザーが登録されていません' })
-  }
-  try {
-    // TODO: req.body が [メールアドレス, パスワード]の組み合わせ確認
-    console.log("req:", req);
-    const body = req.body
     await cognito.userLogin(body.email, body.password)
     res.json({ message: 'ログイン成功', user })
   } catch (error) {

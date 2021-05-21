@@ -42,10 +42,8 @@ export const userLogin = async (email, password) => {
       email: email,
       password: password,
     }).then((user)=>{
-      console.log(user)
       resolve(user);
     }).catch(err => {
-      console.log(err)
       reject(err.data);
     });
   });

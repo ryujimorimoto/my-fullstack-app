@@ -7,10 +7,8 @@ import { useHistory } from 'react-router-dom'
 import { parse } from 'query-string';
 
 import createApp from '@shopify/app-bridge';
-import {
-  userRegister,
-  userLogin,
-} from '../../utils/auth_api';
+import cognitoBase from '../../utils/cognito.js'
+const cognito = new cognitoBase();
 
 export default function SignIn(props) {
   // タブ定義
@@ -277,20 +275,21 @@ export default function SignIn(props) {
 
     try{
       setSingUpLoading(true)
-      console.log(shopFieldValue)
+      const host = Buffer.from(shopFieldValue).toString('base64');
       // shopFieldValueのストアにアプリがインストール済みかチェック
       const app = createApp({
         apiKey: process.env.REACT_APP_SHOPIFY_API_KEY,
-        shopOrigin: shopFieldValue
+        shopOrigin: shopFieldValue,
+        host: host,
       });
-      await userLogin( emailFieldValue, passwordFieldValue)
+      let user
+      user = await cognito.login( emailFieldValue, passwordFieldValue)
+      console.log("user:", user)
       window.location.href = "/top?shop=" + shopFieldValue;
-      // history.push("/top?shop=" + shopFieldValue)
-      // const redirect_url = process.env.REACT_APP_APPLICATION_URL + "/top?shop=" + shopFieldValue;
       // Redirect.create(app).dispatch(Redirect.Action.ADMIN_PATH, redirect_url);
     } catch(err) {
       console.log(err)
-      if(err.name == "AppBridgeError"){
+      if(err?.name == "AppBridgeError"){
         setErrorToast("ショップドメインまたはAPIキーが違います")
       }else{
         setErrorToast("メールアドレスまたはパスワードが違います")
@@ -315,7 +314,7 @@ export default function SignIn(props) {
 
     try {
       setSingUpLoading(true)
-      await userRegister( emailFieldValue, passwordFieldValue, nameFieldValue)
+      await cognito.signUp( emailFieldValue, passwordFieldValue, nameFieldValue)
       // アカウント登録が成功したら、認証ページへリダイレクトさせている
       history.push( "/verification/" + emailFieldValue)
       // document.location.href = "/verification/" + emailFieldValue;

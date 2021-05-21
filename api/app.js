@@ -3,7 +3,6 @@ const app = express()
 const passport = require('passport')
 const {
   users,
-  auth,
 } = require('./controllers')
 
 /**
@@ -48,11 +47,6 @@ const asyncHandler = fn => (req, res, next) => {
 app.options(`*`, (req, res) => {
   res.status(200).send()
 })
-
-app.post(`/users/register`, asyncHandler(users.register))
-app.post(`/users/verification`, asyncHandler(users.verification))
-app.post(`/users/login`, asyncHandler(users.login))
-
 
 
 /******************************
