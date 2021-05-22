@@ -9,11 +9,6 @@ inputs:
   # domain: api.${env:domain}
   region: ap-northeast-1
   env:
-    # DB: ${output:database.name}
-    # DB_INDEX1: ${output:database.indexes.gsi1.name}
-    # TOKEN_SECRET: ${env:tokenSecret}
-    AWS_PROJECT_REAGION: ${env:AWS_PROJECT_REAGION}
     APP_NAME: ${app}
     SHOPIFY_API_KEY: ${env:SHOPIFY_API_KEY}
     SHOPIFY_API_SECRET: ${env:SHOPIFY_API_SECRET}
-    AWS_REGION_DB: ${env:AWS_REGION_DB}
