@@ -5,10 +5,10 @@ inputs:
   name: ${app}-shopTokens
   region: ap-northeast-1
   attributeDefinitions:
-    - AttributeName: shop_id
+    - AttributeName: shop_domain
       AttributeType: S
   keySchema:
-    - AttributeName: shop_id
+    - AttributeName: shop_domain
       KeyType: HASH
   ProvisionedThroughput:
     ReadCapacityUnits: 1

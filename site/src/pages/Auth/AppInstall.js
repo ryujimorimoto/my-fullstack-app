@@ -66,12 +66,12 @@ async function shopExist(shopOrigin){
   })
   const res = await axios.get('/shop/exist'+'?shop='+ shopOrigin)
   console.log("======================\n",res.data);
-  return res.data.exist;
+  return {exist: res.data.exist, access_token: res.data.access_token};
 }
-async function appRedirect(shopExist, shopOrigin, query){
+async function appRedirect(shopExisted, shopOrigin, query){
   const apiKey = process.env.REACT_APP_SHOPIFY_API_KEY;
   const scope = process.env.REACT_APP_SCOPES;
-  if(shopExist){
+  if(shopExisted.exist){
     if (window.top === window.self) {
       console.log("Shopifyアプリ画面以外")
       window.location.assign(process.env.REACT_APP_APPLICATION_URL + '/top?shop=' + shopOrigin);

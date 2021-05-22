@@ -1,6 +1,6 @@
 const axiosBase = require("axios");
 const AWS = require("aws-sdk");
-const docClient = new AWS.DynamoDB.DocumentClient({region: process.env.AWS_REGION});
+const docClient = new AWS.DynamoDB.DocumentClient();
 const { Shopify } = require('@shopify/shopify-api');
 const shopifySignature  = require('./_shopifySignature');
 
@@ -28,12 +28,12 @@ console.log(" GET /oauth", req);
     client_secret:process.env.SHOPIFY_API_SECRET,
     code:code
   }).then(response=>{
-    //shop_id と token を永続化
+    //shop_domain と token を永続化
     let table = `${process.env.APP_NAME}-shopTokens`;
     let params = {
       TableName: table,
       Item:{
-        shop_id:shopOrigin,
+        shop_domain:shopOrigin,
         token:JSON.stringify(response.data)
       }
     };
@@ -75,7 +75,7 @@ const shop_exist = async (req, res, next) => {
   let params = {
     TableName: table,
     Key:{
-      shop_id:req.apiGateway.event.queryStringParameters.shop,
+      shop_domain:req.apiGateway.event.queryStringParameters.shop,
     }
   };
   console.log("params:", params)
@@ -86,9 +86,9 @@ const shop_exist = async (req, res, next) => {
     } else {
         console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
         if(data.Item){
-          return res.json({exist:true})
+          return res.json({exist:true, access_token: data.Item.token.access_token})
         }else{
-          return res.json({exist:false})
+          return res.json({exist:false, access_token:null})
         }
     }
   });

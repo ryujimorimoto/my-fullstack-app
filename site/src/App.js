@@ -32,15 +32,16 @@ export default function App() {
     <AppProvider i18n={translations}>
       <Router>
         <Switch>
-
-          <Route path='/top' component={Home} />
+          {/* Authグループ */}
           <Route path='/auth/register' component={Auth} />
           <Route exact path='/auth/verification/:email' component={Verification} />
           <Route path='/auth/login' component={Auth} />
           <Route path='/auth/callback' component={Callback} />
           <Route path='/auth/shop_domain' component={ShopDomain} />
           <Route exact path='/auth' component={AppInstall} />
+          {/* Authグループ 終了 */}
 
+          <Route path='/top' component={Home} />
           <PrivateRoute
             exact
             path='/'

@@ -25,7 +25,7 @@ org: ryuji
 
 ### フロント側（site）の設定
 
-ユーザー認証は、フロント側の cognito を使って対応する。
+ユーザー認証は、フロント側で cognito を使って対応する。
 cognito は、amplify を使って導入する。
 ./site ディレクトリで amplify を実行する。
 
