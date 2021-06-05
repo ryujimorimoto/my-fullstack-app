@@ -11,6 +11,7 @@ GitHub からクローンを作成。
 
 ```
 gh repo clone ryujimorimoto/my-fullstack-app アプリ名
+cd アプリ名
 ```
 
 ルートディレクトリの serverless.yml にある app をアプリ名に変更
@@ -50,12 +51,6 @@ amplify add hosting
   Learn more
 ```
 
-amplify を publish します。
-
-```
-amplify publish
-```
-
 参考サイト：[サーバレスで Shopify アプリの構築方法を解説！AWS Amplify, Serverless Framework](https://forestbook-freelance.com/2020/12/27/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%AC%E3%82%B9%E3%81%A7shopify%E3%82%A2%E3%83%97%E3%83%AA%E3%81%AE%E6%A7%8B%E7%AF%89%E3%82%92%E8%A7%A3%E8%AA%AC%EF%BC%81/)
 
 site ディレクトリはデプロイ時にビルドする設定になっているので、
@@ -80,6 +75,12 @@ Shopify のアプリ API キーとシークレットキーは、
 Shopify パートナーダッシュボードの管理画面から取得できます。
 また、必要に応じて、REACT_APP_SCOPES にスコープを設定してください。
 [アクセススコープ一覧](https://shopify.dev/docs/admin-api/access-scopes)
+
+最後に amplify を publish します。
+
+```
+amplify publish
+```
 
 ### バックエンド側（api）の設定
 
@@ -147,5 +148,16 @@ api:
 なぜか、api ディレクトリ、site ディレクトリのそれぞれで sls deploy をやらないと、設定した環境変数が適応されない。
 データベースの追加は、ルートディレクトリにフォルダを作って、その中に serverless.yml を作成し、component で dynamodb を追加する。
 なぜか、cloudwatch にデータが一つもないと、アクセス失敗になってしまう。もしかしたら、単に時間の問題かもしれない。
+
+- api ディレクトリ、site ディレクトリでそれぞれ `sls deploy` を行う。
+
+site: url: に表記されている、CloudFront の URL にアクセスし、動作確認を行う。
+
+- https://xxxxxxxxxxxx.cloudfront.net へアクセス
+- 会員登録、verification code メールの受信を確認する
+- code を入力して会員登録を完了させる
+- 適当なストアの URL を入力し、ログインできるか確認する
+
+問題なくログインできれば環境構築の完了！
 
 ーーーーーーーーーーーーー
