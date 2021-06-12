@@ -1,4 +1,4 @@
-app: my-fullstack-app
+app: new-note-app
 org: ryuji
 component: aws-iam-role
 name: permissions

@@ -2,18 +2,24 @@ app: new-note-app
 org: ryuji
 service: daynamoDB
 
+package:
+  individually: true
+  exclude:
+    - .serverless/**
+
 provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
-  profile: noteapp
+  profile: default
   region: ap-northeast-1
 resources:
   Resources:
-    DynamoDbTable:
+    TokensTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
-        TableName: ${app}-shopTokens
+        # アプリ名を設定
+        TableName: アプリ名-shopTokens
         AttributeDefinitions:
           - AttributeName: shop_domain
             AttributeType: S

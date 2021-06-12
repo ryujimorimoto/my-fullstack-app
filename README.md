@@ -14,7 +14,7 @@ gh repo clone ryujimorimoto/my-fullstack-app アプリ名
 cd アプリ名
 ```
 
-ルートディレクトリの serverless.yml にある app をアプリ名に変更
+※ 各フォルダにある serverless.yml にある app をアプリ名に、org をアカウント名に変更してください。
 
 ```
 app: アプリ名（半角英字の小文字、ハイフン（-）のみ利用可能）
@@ -23,12 +23,16 @@ org: ryuji
 
 - api ディレクトリがバックエンド
 - site ディレクトリがフロントエンド
+- dynamoDB データベースの設定
+- permissions バックエンド（api ディレクトリ）からのアクセス権限を管理
 
 ### フロント側（site）の設定
 
 ユーザー認証は、フロント側で cognito を使って対応する。
 cognito は、amplify を使って導入する。
 ./site ディレクトリで amplify を実行する。
+
+※（最終的には、全て serverless framework へ統一したい）
 
 ```
 cd site
@@ -37,8 +41,9 @@ amplify init
 amplify add auth
 ```
 
-amplify でホスティングを行います。
-マニュアルにすることで、amplify にホスティングさせず、
+ホスティングは serverless framework 経由で行いますが、
+amplify でホスティングの設定をしないとデプロイできないので、
+ホスティング設定をマニュアルに設定します。
 後でサーバーレスフレームワークでホスティングさせます。
 
 ```
@@ -104,52 +109,24 @@ SHOPIFY_API_SECRET=Shopifyのアプリシークレットキー
 ### デプロイ
 
 デプロイし、AWS Lambda、AWS ApiGateway、AWS CloudFront、DynamoDB などを作成します。
-ルートディレクトリ（`cd ..`）でデプロイします。
+最初に permissions ディレクトリをデプロイし、api, site, dynamoDB ディレクトリをデプロイしてください。
+（api の c 設定に permissions の設定が必要なので、先に permissions をデプロイしています）
 
 ```
+cd permissions
 sls deploy
-```
-
-成功した場合、次のように表示されます。
-
-```
-serverless ⚡framework
-Action: "deploy" - Stage: "dev" - Org: "ryuji" - App: "xxx-app" - Name: "xxxApp"
-
-token-database:
-  name:    xxx-app-shopTokens
-  arn:     arn:aws:dynamodb:ap-northeast-1:000000000000:table/xxx-app-shopTokens
-  region:  ap-northeast-1
-  indexes:
-
-permissions:
-  name: permissions-dev
-  arn:  arn:aws:iam::0000000000000:role/permissions-dev
-
-site:
-  bucket:          website-abc123def
-  distributionUrl: https://xxxxxxxxxxxx.cloudfront.net
-  bucketUrl:       http://website-abc123def.s3-website.ap-northeast-1.amazonaws.com
-  url:             https://xxxxxxxxxxxx.cloudfront.net
-
-api:
-  apiGatewayUrl: https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com
-  url:           https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com
-
-48s › Serverless › "deploy" ran for 4 apps successfully.
+cd ../api
+sls deploy
+cd ../site
+sls deploy
+cd ../dynamoDB
+sls deploy
 ```
 
 最後に、フロントエンド（site）とバックエンド（api）をつなげるために、
 作成された URL を環境変数に設定します。
 
 - site/.env ファイルの `REACT_APP_APPLICATION_URL` に site の distributionUrl を設定。 `REACT_APP_PUBLIC_API_URL` に api の apiGatewayUrl を設定。
-
-※注意事項
-なぜか、api ディレクトリ、site ディレクトリのそれぞれで sls deploy をやらないと、設定した環境変数が適応されない。
-データベースの追加は、ルートディレクトリにフォルダを作って、その中に serverless.yml を作成し、component で dynamodb を追加する。
-なぜか、cloudwatch にデータが一つもないと、アクセス失敗になってしまう。もしかしたら、単に時間の問題かもしれない。
-
-- api ディレクトリ、site ディレクトリでそれぞれ `sls deploy` を行う。
 
 site: url: に表記されている、CloudFront の URL にアクセスし、動作確認を行う。
 
@@ -161,3 +138,37 @@ site: url: に表記されている、CloudFront の URL にアクセスし、�
 問題なくログインできれば環境構築の完了！
 
 ーーーーーーーーーーーーー
+
+# IAM 権限設定
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:*",
+                "dynamodb:*",
+                "apigateway:*",
+                "cloudformation:*",
+                "s3:*",
+                "cloudfront:*",
+                "amplify:*",
+                "cognito-idp:*",
+                "cognito-identity:*",
+                "iam:UpdateAssumeRolePolicy",
+                "iam:GetRole",
+                "iam:ListAttachedRolePolicies",
+                "iam:DeleteRole",
+                "iam:CreateRole",
+                "iam:ListRolePolicies",
+                "iam:PassRole",
+                "iam:*RolePolicy"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
