@@ -80,7 +80,6 @@ async function appRedirect(shopExisted, shopOrigin, query){
         apiKey: apiKey,
         host: Buffer.from(shopOrigin).toString('base64'),
       });
-      console.log("Shopifyアプリ画面", apiKey, shopOrigin)
       Redirect.create(app).dispatch(Redirect.Action.APP, '/top?shop=' + shopOrigin);
     }
   }else{

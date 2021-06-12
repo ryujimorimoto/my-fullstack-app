@@ -1,3 +1,5 @@
+app: my-fullstack-app
+org: ryuji
 component: website
 name: site
 

@@ -1,0 +1,46 @@
+app: new-note-app
+org: ryuji
+service: daynamoDB
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  profile: noteapp
+  region: ap-northeast-1
+resources:
+  Resources:
+    DynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${app}-shopTokens
+        AttributeDefinitions:
+          - AttributeName: shop_domain
+            AttributeType: S
+        KeySchema:
+          - AttributeName: shop_domain
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TimeToLiveSpecification:
+          AttributeName: expired_at
+          Enabled: true
+# component: aws-dynamodb
+# name: token-database
+
+# inputs:
+#   name: ${app}-shopTokens
+#   region: ap-northeast-1
+#   attributeDefinitions:
+#     - AttributeName: shop_domain
+#       AttributeType: S
+#   keySchema:
+#     - AttributeName: shop_domain
+#       KeyType: HASH
+#   ProvisionedThroughput:
+#     ReadCapacityUnits: 1
+#     WriteCapacityUnits: 1
+#   TimeToLiveSpecification:
+#     AttributeName: expired_at
+#     Enabled: true
