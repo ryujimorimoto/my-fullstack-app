@@ -1,6 +1,6 @@
-const users = require('./auth')
-const users = require('./graphql')
-const users = require('./webhook')
+const auth = require('./auth')
+const graphql = require('./graphql')
+const webhook = require('./webhook')
 
 module.exports = {
   auth, 
