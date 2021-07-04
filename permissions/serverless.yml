@@ -1,4 +1,4 @@
-app: new-note-app
+app: test-app2
 org: ryuji
 component: aws-iam-role
 name: permissions

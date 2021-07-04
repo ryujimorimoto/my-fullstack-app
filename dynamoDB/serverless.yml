@@ -1,4 +1,4 @@
-app: new-note-app
+app: test-app2
 org: ryuji
 service: daynamoDB
 
@@ -19,7 +19,7 @@ resources:
       Type: "AWS::DynamoDB::Table"
       Properties:
         # アプリ名を設定
-        TableName: アプリ名-shopTokens
+        TableName: test-app2-shopTokens
         AttributeDefinitions:
           - AttributeName: shop_domain
             AttributeType: S
