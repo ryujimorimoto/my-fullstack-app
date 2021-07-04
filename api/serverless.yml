@@ -1,39 +1,97 @@
-app: my-fullstack-app
+# app: ${file(../serverless.yml).app}
+# org: ${file(../serverless.yml).org}
+app: test-app1
 org: ryuji
-component: express
-name: api
-custom:
+service: api
+
+package:
+  individually: true
+  exclude:
+    - .serverless/**
+    - ./yarn.lock
+    - ./template.*
+    - ./package.json
+    - ./.env.example
+    - ./README.md
+
+plugins:
+  - serverless-dotenv-plugin
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs14.x
   stage: dev
-
-inputs:
-  src: ./
-
-  policy:
-    # AWS Lambda function containing Express Logs and Assume Role access
-    - Effect: Allow
-      Action:
-        - sts:AssumeRole
-        - logs:CreateLogGroup
-        - logs:CreateLogStream
-        - logs:PutLogEvents
-      Resource: "*"
-    # AWS DynamoDB Table access
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "*"
-
-  # domain: api.${env:domain}
   region: ap-northeast-1
-  env:
-    APP_NAME: ${app}
+  apiGateway:
+    shouldStartNameWithService: true
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        # AWS Lambda function containing Express Logs and Assume Role access
+        - Effect: Allow
+          Action:
+            - sts:AssumeRole
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+        # AWS DynamoDB Table access
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource: "*"
+
+  environment:
+    REACT_APP_PUBLIC_API_URL: ${env:REACT_APP_PUBLIC_API_URL}
+    REACT_APP_SHOPIFY_API_KEY: ${env:REACT_APP_SHOPIFY_API_KEY}
+    REACT_APP_SHOPIFY_SECRET_KEY: ${env:REACT_APP_SHOPIFY_SECRET_KEY}
+    REACT_APP_SCOPES: ${env:REACT_APP_SCOPES}
+    REACT_APP_APPLICATION_URL: ${env:REACT_APP_APPLICATION_URL}
+
+    APP_NAME: ${env:APP_NAME}
+    TOKEN_TABLE: ${env:APP_NAME}-shopTokens
     SHOPIFY_API_KEY: ${env:SHOPIFY_API_KEY}
     SHOPIFY_API_SECRET: ${env:SHOPIFY_API_SECRET}
     SHOPIFY_API_VERSION: ${env:SHOPIFY_API_VERSION}
     APP_APPLICATION_URL: ${env:APP_APPLICATION_URL}
     UNINSTALL_WEBHOOK_URL: ${env:UNINSTALL_WEBHOOK_URL}
+
+functions:
+  # publicEndpoint:
+  #   handler: index.handler
+  #   events:
+  #     - http:
+  #         path: "/api/public/{proxy+}"
+  #         method: ANY
+  #         cors:
+  #           origins:
+  #             - "*"
+  #           headers:
+  #             - Authorization
+  #             - Content-Type
+  #             - X-Amz-Date
+  #             - X-Api-Key
+  #             - X-Amz-Security-Token
+  #             - X-Amz-User-Agent
+  #           allowCredentials: true
+
+resources:
+  Resources:
+    TokensTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${env:APP_NAME}-shopTokens
+        AttributeDefinitions:
+          - AttributeName: shop_domain
+            AttributeType: S
+        KeySchema:
+          - AttributeName: shop_domain
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TimeToLiveSpecification:
+          AttributeName: expired_at
+          Enabled: true
