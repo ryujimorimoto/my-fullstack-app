@@ -1,4 +1,4 @@
-app: test-app2
+app: my-fullstack-app
 org: ryuji
 component: express
 name: api
